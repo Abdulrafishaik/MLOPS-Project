@@ -1,0 +1,40 @@
+name : CI Train and save the model
+on:
+  push:
+
+   branches : [ main ]
+
+  pull_request:
+
+   branches : [ main ]
+
+jobs:
+  matrix-pip:
+   name: Train and save the model
+   runs-on: ubuntu-latest
+   strategy:
+    matrix:
+      python-version: [3.8, 3.9, 3.10]
+
+    steps:
+     - name: checkout
+       uses : actions/checkout@v4
+       with:
+        python-version: ${{matrix.python-version}}
+
+      -name : upgrade pip
+        run : python -m pip imstall --upgrade pip setuptools whells
+
+
+      - name: install project depen dependencies
+        run :  python -m pip install -r requirements.txt
+
+      - name : Train and save the model
+        run : python train.py
+              ls -la artifacts
+        
+      - name : uplaod artifacts
+        uses : actions/upload-artifact@V3
+        with :
+          name : ml-artifacts -${{matrix.python-version}} -${{github.run_id}}
+          path : artifacts
